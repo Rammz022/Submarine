@@ -8,22 +8,23 @@ import socket from '../../helpers/socket';
 class Auth extends React.Component {
   constructor(props) {
     super();
+    this.MESSAGES = props.MESSAGES;
+    // колбеки
     this.setAuthState = props.setAuthState;
     this.setRegistrState = props.setRegistrState;
-    this.setTeams = props.setTeams;
-    this.MESSAGES = props.MESSAGES;
-    //public_old Внизу
-    socket.on(this.MESSAGES.USER_LOGIN, data => {
-      if(data && data.user && data.user.token) {
-        localStorage.setItem('token', data.user.token);
-        localStorage.setItem('id', data.user.id);
-        this.setTeams(data.teams);
+
+    socket.on(this.MESSAGES.USER_LOGIN, user => {
+      if(user && user.token && user.id) {
+        localStorage.setItem('token', user.token);
+        localStorage.setItem('id', user.id);
         this.setAuthState(false);
+      } else {
+        console.log('Ошибка авторизации!!!');
       }
     });
+    socket.on(this.MESSAGES.USER_LOGOUT, data => data && (this.setAuthState(true) || localStorage.removeItem('token') || localStorage.removeItem('id')));
   }
 
-  //public_old функции сверху в onload
   auth() {
     const login = document.querySelector('#loginAuth').value;
     const password = document.querySelector('#passwordAuth').value;
@@ -37,7 +38,7 @@ class Auth extends React.Component {
   render() {
     return (
       <div className="container__intro">
-      { <div className="auth">
+        <div className="auth">
           <div className="menu__auth">
           <h1>Authorization</h1>
             <div className="input__menu">
@@ -50,7 +51,6 @@ class Auth extends React.Component {
             </div>
           </div>
         </div>
-        }
       </div>
     );
   }
