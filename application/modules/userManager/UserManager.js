@@ -1,5 +1,6 @@
 const md5 = require('md5');
 const BaseManager = require('../BaseManager');
+const User = require('./User');
 
 class UserManager extends BaseManager {
     constructor(options) {
@@ -15,26 +16,53 @@ class UserManager extends BaseManager {
         });
 
         // настроить триггеры
-        this.mediator.set('getUserByToken', data => this.getUserByToken(data));
+        this.mediator.set(this.TRIGGERS.GET_USER_BY_TOKEN, data => this.getUserByToken(data));
+        this.mediator.set(this.TRIGGERS.GET_USER_BY_ID, id => this.getUserById(id));
+        // настроить события
+        this.mediator.subscribe(this.EVENTS.LOGOUT, async data => await this.disconnect(data));
     }
+
+    /*        */
+    /* EVENTS */
+    /*        */
+
+    async disconnect(data) {
+        let user = this.getUserByToken(data);
+        if (user) {
+            await this.db.setToken(null, user.login); // занулить токен
+            delete this.users[user.id]; // удалить пользователя из списка
+        }
+    }
+
+    /*          */
+    /* TRIGGERS */
+    /*          */
 
     getUserByToken(data = {}) {
         if (data.token) {
-            for (let user in this.users) {
-                if (this.users[user].token === data.token) return this.users[user];
+            for (let id in this.users) {
+                if (this.users[id].token === data.token) return this.users[id];
             }
         }
         return null;
     }
 
-    async userLogout(data = {}, socket) {
-        let user = this.getUserByToken(data);
-        if (user) {
-            await this.db.setToken(null, user.login);
-            delete this.users[user.id];
-            return socket.emit(this.MESSAGES.USER_LOGOUT, true);
+    getUserById(id){
+        if (id) {
+            for (let key in this.users) {
+                if (this.users[key].id === id) return this.users[key];
+            }
         }
-        socket.emit(this.MESSAGES.USER_LOGOUT, false);
+        return null;
+    }
+
+    /*       */
+    /* LOGIC */
+    /*       */
+
+    async userLogout(data = {}, socket) {
+        this.mediator.call(this.EVENTS.LOGOUT, data);// вызвать все подписанные события
+        return socket.emit(this.MESSAGES.USER_LOGOUT, true);
     }
 
     async userLogin(data = {}, socket) {
@@ -50,12 +78,14 @@ class UserManager extends BaseManager {
                     await this.db.setToken(token, login);
                     user.token = token;
                     user.socketId = socket.id;
-                    this.users[user.id] = user;
+                    this.users[user.id] = new User(user);
+                    socket.emit(this.MESSAGES.USER_LOGIN, this.users[user.id].get());
+                    socket.emit(this.MESSAGES.TEAM_LIST, this.mediator.get(this.TRIGGERS.GET_TEAMS)); //отправить команды сразу при входе
+                    return;
                 }
             }
         }
-        let teams = this.mediator.get('getTeams');//отправить команды сразу при входе
-        socket.emit(this.MESSAGES.USER_LOGIN, { user, teams });
+        socket.emit(this.MESSAGES.USER_LOGIN, false);
     }
 
     async userRegistration(data = {}, socket) {
