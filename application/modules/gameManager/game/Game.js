@@ -71,9 +71,19 @@ class Game {
         return false;   
     }
 
+    // доделать
     move(submarine, gamer, direction) {
         if (submarine && gamer) {
-            //...
+            switch(direction) {
+                case MOVE_LEFT:
+                        break;
+                case MOVE_RIGHT:
+                        break;
+                case MOVE_UP:
+                        break;
+                case MOVE_DOWN:
+                        break;
+            }
             return true;
         }
         return false;

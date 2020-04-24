@@ -10,12 +10,11 @@ class Team extends React.Component {
     this.MESSAGES = props.MESSAGES;
     this.setAuthState = props.setAuthState;
     this.setGameState = props.setGameState;
-    this.setTeams = props.setTeams;
     this.state = {
       createTeam: false,
       teams: props.teams
     };
-    socket.on(this.MESSAGES.TEAM_LIST, (data) => { this.setState({ teams : data }); this.setTeams(data); });
+    socket.on(this.MESSAGES.TEAM_LIST, (data) => { this.setState({ teams : data }) });
     socket.on(this.MESSAGES.REMOVE_TEAM, (data) => data && this.setGameState(false));
     socket.on(this.MESSAGES.CREATE_TEAM, (data) => data && this.setGameState(true));
     socket.on(this.MESSAGES.JOIN_TO_TEAM, (data) => data && this.setGameState(true));

@@ -3,8 +3,10 @@ class Gamer {
         this.id = id;
         this.name = name;
         this.role = role;
-        this.compartment = null;
-        this.position = null;
+        this.position = {
+            x: 0,
+            y: 0
+        };
     }
 }
 

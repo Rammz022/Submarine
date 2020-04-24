@@ -10,7 +10,11 @@ class GameManager extends BaseManager {
                 refreshScene: scene => {
                     if(scene) {
                         let teams = this.mediator.get(this.TRIGGERS.GET_TEAMS);
-                        console.log(teams);
+                        for(let key in teams) {
+                            let player = teams[key].players.find(player => this.isCaptain(teams[key], player.id));// найти капитана в команде
+                            let user = this.mediator.get(this.TRIGGERS.GET_USER_BY_ID, player.id);// взять пользователя
+                            this.io.sockets.connected[user.socketId].emit(this.MESSAGES.UPDATE_SCENE, scene);// отправить капитану сцену
+                        }
                     }
                 },
                 // чтобы отдавалась всей команде
@@ -45,7 +49,6 @@ class GameManager extends BaseManager {
 
     startGame(data, socket) {
         const user = this.mediator.get(this.TRIGGERS.GET_USER_BY_TOKEN, data);
-        console.log(user);
         if (user) {
             const team = this.mediator.get(this.TRIGGERS.GET_TEAM, user.id);
             if (team && this.isCaptain(team, user.id)) { // если капитан команды
