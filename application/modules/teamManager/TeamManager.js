@@ -60,21 +60,7 @@ class TeamManager extends BaseManager {
     getTeams() {
         return this.teams;
     }
-
-    getRoomIdByUserId(id) {
-        let team = null;
-        for(let teamId in this.teams) {
-            if(this.teams[teamId].players.find(player => id === player.id)){
-                team = teamId;
-            }
-        }
-        return team ? this.teams[team].roomId : null;
-    }
-
-    /*       */
-    /* LOGIC */
-    /*       */
-
+    
     getTeam(id) {
         for (let key in this.teams) {
             if (this.teams[key].players.find(player => player.id === id)) {
@@ -83,6 +69,10 @@ class TeamManager extends BaseManager {
         }
         return null;
     }
+
+    /*       */
+    /* LOGIC */
+    /*       */
 
     isCaptain(team, captainId) {
         return team.players.find(

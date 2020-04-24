@@ -7,7 +7,12 @@ class GameManager extends BaseManager {
         this.game = new Game({ 
             callbacks: { 
                 // чтобы отдавалась только командирам
-                refreshScene: scene => scene && this.io.local.emit(this.MESSAGES.UPDATE_SCENE, scene),
+                refreshScene: scene => {
+                    if(scene) {
+                        let teams = this.mediator.get(this.TRIGGERS.GET_TEAMS);
+                        console.log(teams);
+                    }
+                },
                 // чтобы отдавалась всей команде
                 getSubmarineCB: (gamer, submarine) => {
                     // взять по игроку пользователя
@@ -40,6 +45,7 @@ class GameManager extends BaseManager {
 
     startGame(data, socket) {
         const user = this.mediator.get(this.TRIGGERS.GET_USER_BY_TOKEN, data);
+        console.log(user);
         if (user) {
             const team = this.mediator.get(this.TRIGGERS.GET_TEAM, user.id);
             if (team && this.isCaptain(team, user.id)) { // если капитан команды

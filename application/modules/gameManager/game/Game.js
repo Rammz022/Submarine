@@ -13,7 +13,6 @@ class Game {
         this.ships = {};
         this.timestamp = (new Date()).getTime(); // общеигровое время
         // коллбеки
-        //this.refreshScene = callbacks.refreshScene instanceof Function ? callbacks.refreshScene(this.getScene()) : () => {};
         this.refreshScene = callbacks.refreshScene instanceof Function ? () => callbacks.refreshScene(this.getScene()) : () => {};
         this.getSubmarineCB = (callbacks.getSubmarineCB instanceof Function)
             ? gamer => callbacks.getSubmarineCB(gamer, this.getSubmarine(gamer))
