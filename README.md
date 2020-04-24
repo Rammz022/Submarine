@@ -1,4 +1,8 @@
 # Submarine
+## Запустить:
+1. Сервер: `npm run server` из папки Submarine
+1. Клиент: `npm start` из папки Submarine/public
+
 Установка:
 1. Установить в Submarine/pulbic react (npx create-react-app . из папки public)
 2. Доустановить все нужные компоненты (npm i в Submarine и public)

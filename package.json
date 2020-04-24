@@ -1,6 +1,9 @@
 {
   "name": "submarine",
   "version": "1.0.0",
+  "scripts": {
+    "server": "nodemon app.js"
+  },
   "dependencies": {
     "body-parser": "latest",
     "express": "latest",
@@ -9,6 +12,7 @@
     "sqlite3": "latest"
   },
   "devDependencies": {
+    "nodemon": "^2.0.3",
     "sqlite": "^3.0.6"
   }
 }
